@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Simulador Financeiro – Simples Nacional</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;margin:0;padding:0}
+header{background:#0b3c5d;color:#fff;padding:15px}
+header h1{margin:0;font-size:22px}
+main{padding:20px;max-width:1100px;margin:auto}
+.card{background:#fff;border-radius:8px;padding:20px;margin-bottom:20px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+h2{margin-top:0;color:#0b3c5d}
+label{display:block;margin-top:10px;font-weight:bold}
+input,select{width:100%;padding:8px;margin-top:5px}
+button{margin-top:15px;padding:10px 16px;border:none;border-radius:6px;background:#0b3c5d;color:#fff;font-size:14px;cursor:pointer}
+button:hover{opacity:.9}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{border:1px solid #ccc;padding:8px;text-align:right}
+th{text-align:left;background:#e9eef2}
+.footer-note{font-size:12px;color:#555;margin-top:10px}
+</style>
+</head>
+
+<body>
+<header>
+<h1>Simulador Financeiro – Simples Nacional</h1>
+</header>
+
+<main>
+<div class="card">
+<h2>1. Dados da Empresa</h2>
+<label>Custos Fixos Mensais (R$)</label>
+<input id="fixos" type="number" step="0.01">
+
+<label>Custos Variáveis Mensais (R$)</label>
+<input id="variaveis" type="number" step="0.01">
+
+<label>Margem de Lucro Desejada (%)</label>
+<input id="margem" type="number" step="0.01">
+
+<label>Anexo do Simples Nacional</label>
+<select id="anexo">
+<option value="0.04">Anexo I – Comércio (4%)</option>
+<option value="0.045">Anexo II – Indústria (4,5%)</option>
+<option value="0.06" selected>Anexo III – Serviços (6%)</option>
+<option value="0.045">Anexo IV – Serviços específicos (4,5%)</option>
+<option value="0.155">Anexo V – Serviços intelectuais (15,5%)</option>
+</select>
+
+<button onclick="calcular()">Calcular</button>
+</div>
+
+<div class="card">
+<h2>2. Resultados – Simples Nacional</h2>
+<table>
+<tr><th>Total de Custos</th><td id="t_custos">R$ 0,00</td></tr>
+<tr><th>Receita Bruta Necessária</th><td id="receita">R$ 0,00</td></tr>
+<tr><th>DAS Estimado</th><td id="das">R$ 0,00</td></tr>
+<tr><th>Lucro Líquido</th><td id="lucro">R$ 0,00</td></tr>
+<tr><th>Margem Real</th><td id="margem_real">0%</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h2>3. Comparação – Lucro Presumido (Estimativa)</h2>
+<table>
+<tr><th>Tributos Estimados (13,33%)</th><td id="lp_trib">R$ 0,00</td></tr>
+<tr><th>Lucro Líquido Estimado</th><td id="lp_lucro">R$ 0,00</td></tr>
+</table>
+<div class="footer-note">
+* Lucro Presumido considerado com IRPJ, CSLL, PIS, COFINS e ISS médios.
+</div>
+</div>
+
+<button onclick="window.print()">Imprimir / Salvar em PDF</button>
+</main>
+
+<script>
+function f(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+function calcular(){
+let fixos=Number(document.getElementById('fixos').value||0);
+let variaveis=Number(document.getElementById('variaveis').value||0);
+let margem=Number(document.getElementById('margem').value||0)/100;
+let aliq=Number(document.getElementById('anexo').value);
+
+let custos=fixos+variaveis;
+let receita=custos/(1-margem-aliq);
+let das=receita*aliq;
+let lucro=receita-custos-das;
+let margemReal=lucro/receita*100;
+
+document.getElementById('t_custos').innerText=f(custos);
+document.getElementById('receita').innerText=f(receita);
+document.getElementById('das').innerText=f(das);
+document.getElementById('lucro').innerText=f(lucro);
+document.getElementById('margem_real').innerText=margemReal.toFixed(2)+'%';
+
+let lpTrib=receita*0.1333;
+let lpLucro=receita-custos-lpTrib;
+document.getElementById('lp_trib').innerText=f(lpTrib);
+document.getElementById('lp_lucro').innerText=f(lpLucro);
+}
+</script>
+</body>
+</html>
